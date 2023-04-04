@@ -129,7 +129,7 @@ async def on_ready() -> None:
 # --- seznam prikazu ---
 @bot.command(name="seznam_prikazu")
 async def prikazy(ctx: Context) -> None:
-    msg = (
+    message = (
         "**Příkazy **\n"
         "!list_memes\n"
         '!make_meme <id> "<text 1>" "<text 2>"\n'
@@ -138,7 +138,7 @@ async def prikazy(ctx: Context) -> None:
         "!play_hangman\n"
         "!guess <písmeno>\n"
     )
-    await ctx.send(msg)
+    await ctx.send(message)
 
 
 # --- tvorba memu ---
