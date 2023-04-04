@@ -1,4 +1,4 @@
 # Discord bot
-- Závěrečná práce do Informačních a komunikačnich technonologí
+- Závěrečná práce pro Informační a komunikační technonologie
 - Gymnázium Velké Meziříčí
-- *@Petr Ambrož*
+- *@Petr Ambrož*, 2023
