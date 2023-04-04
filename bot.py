@@ -88,11 +88,12 @@ class Hangman:
             self.word = self.word_1[:-1]
         else:
             self.word = self.word_1
+        print(self.word)
         self.player = player
         self.lives = 7
         self.guesses = []
         self.word_letters = []
-        for i in range(len(self.word)):
+        for char in self.word:
             self.word_letters.append("- ")
 
     def play(self, letter) -> int:
@@ -206,45 +207,54 @@ async def guess(ctx: Context, letter: str) -> None:
     await ctx.message.delete()
     global msg_id
     r = hangman.play(letter)
-    guessw = ""
+    guessed_letters = ""
     printword = ""
     for i in range(len(hangman.word)):
         printword += hangman.word_letters[i] + " "
     for i in range(len(hangman.guesses)):
-        guessw += hangman.guesses[i] + " "
+        guessed_letters += hangman.guesses[i] + " "
+    if len(letter) > 1:
+        pass
+        await msg_id.edit(content=("**hangman**\n"
+                                   + "Player: " + str(hangman.player) + "\n"
+                                   + "Guesses: " + guessed_letters + "\n"
+                                   + "Lives: " + str(hangman.lives) + "\n"
+                                   + "Word: " + printword + "\n"
+                                   + "Guess only one letter at time!"))
     if "- " not in hangman.word_letters:
         await msg_id.edit(content=("**hangman**\n"
                                    + "Player: " + str(hangman.player) + "\n"
-                                   + "Guesses: " + guessw + "\n"
+                                   + "Guesses: " + guessed_letters + "\n"
                                    + "Lives: " + str(hangman.lives) + "\n"
                                    + "Word: " + printword + "\n"
                                    + "You won!"))
         msg_id = None
+        return
     if r == 1:
         await msg_id.edit(content=("**hangman**\n"
                                    + "Player: " + str(hangman.player) + "\n"
-                                   + "Guesses: " + guessw + "\n"
+                                   + "Guesses: " + guessed_letters + "\n"
                                    + "Lives: " + str(hangman.lives) + "\n"
                                    + "Word: " + printword + "\n"
                                    + "Correct guess."))
-    if r == 0:
+    elif r == 0:
         await msg_id.edit(content=("**hangman**\n"
                                    + "Player: " + str(hangman.player) + "\n"
-                                   + "Guesses: " + guessw + "\n"
+                                   + "Guesses: " + guessed_letters + "\n"
                                    + "Lives: " + str(hangman.lives) + "\n"
                                    + "Word: " + printword + "\n"
                                    + "Wrong guess."))
     if r == 2:
         await msg_id.edit(content=("**hangman**\n"
                                    + "Player: " + str(hangman.player) + "\n"
-                                   + "Guesses: " + guessw + "\n"
+                                   + "Guesses: " + guessed_letters + "\n"
                                    + "Lives: " + str(hangman.lives) + "\n"
                                    + "Word: " + printword + "\n"
                                    + "You already guessed that."))
     if hangman.lives == 0:
         await msg_id.edit(content=("**hangman**\n"
                                    + "Player: " + str(hangman.player) + "\n"
-                                   + "Guesses: " + guessw + "\n"
+                                   + "Guesses: " + guessed_letters + "\n"
                                    + "Lives: " + str(hangman.lives) + "\n"
                                    + "Word: " + printword + "\n"
                                    + "You lost. The word was: "
