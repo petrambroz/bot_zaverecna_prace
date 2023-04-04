@@ -8,7 +8,6 @@ from notifiers import get_notifier
 import json
 import re
 import random
-from typing import Dict
 from typing import List
 load_dotenv()
 TOKEN = getenv("DISCORD_TOKEN")
