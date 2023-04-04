@@ -85,9 +85,8 @@ class MentionsNotifier:
 class Hangman:
     def start_game(self, player) -> None:
         with open("words.txt", "r") as file:
-            wordlist = file.readlines()
-        num = random.randrange(0, len(wordlist), 1)
-        self.word_1 = wordlist[num]
+            all_words = file.readlines()
+        self.word_1 = random.choice(all_words)
         # odebrani \n pokud ho slovo obsahuje
         if "\n" in self.word_1:
             self.word = self.word_1[:-1]
@@ -212,7 +211,7 @@ async def play_hangman(ctx: Context) -> None:
 async def guess(ctx: Context, letter: str) -> None:
     await ctx.message.delete()
     global msg_id
-    if len(letter) > 1:
+    if len(letter) != 1 or not letter.isalpha():
         await ctx.send("Guess only one letter at time.")
         return
     r = hangman.play(letter)
