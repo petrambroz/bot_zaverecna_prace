@@ -53,9 +53,13 @@ class MemeGenerator:
 class MentionsNotifier:
     def __init__(self) -> None:
         self.emails = {}
+        with open("emails.json", "r") as file:
+            self.emails = json.load(file)
 
     def subscribe(self, user_id: int, email: str) -> None:
-        self.emails[user_id] = email
+        with open("emails.json", "w") as file:
+            self.emails[user_id] = email
+            json.dump(self.emails, file)
 
     def unsubscribe(self, user_id: int) -> None:
         if user_id in self.emails:
