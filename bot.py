@@ -52,18 +52,23 @@ class MemeGenerator:
 
 class MentionsNotifier:
     def __init__(self) -> None:
-        self.emails = {}
+        with open("emails.json", "r") as file:
+            self.emails = json.load(file)
 
     def subscribe(self, user_id: int, email: str) -> None:
-        self.emails[user_id] = email
+        with open("emails.json", "w") as file:
+            self.emails[str(user_id)] = email
+            json.dump(self.emails, file)
 
     def unsubscribe(self, user_id: int) -> None:
         if user_id in self.emails:
-            del self.emails[user_id]
+            with open("emails.json", "w") as file:
+                del self.emails[user_id]
+                json.dump(self.emails, file)
 
     def notify_about_mention(self, user_id: List, msg_content: str,
                              msg_url: str) -> None:
-        user_email = self.emails[user_id]
+        user_email = self.emails[str(user_id)]
         email = get_notifier("email")
         settings = {'host': 'ksi2022smtp.iamroot.eu',
                     'port': 465,
@@ -175,8 +180,9 @@ async def on_message(message: Message) -> None:
     if users != []:
         for i in range(len(users)):
             mentions.append(users[i].id)
+    print(mentions_notifier.emails)
     for user in mentions:
-        if mentions[i] in mentions_notifier.emails:
+        if str(mentions[i]) in mentions_notifier.emails:
             mentions_notifier.notify_about_mention(mentions[i],
                                                    message.content,
                                                    message.jump_url)
