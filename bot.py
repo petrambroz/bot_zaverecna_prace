@@ -206,6 +206,9 @@ async def play_hangman(ctx: Context) -> None:
 async def guess(ctx: Context, letter: str) -> None:
     await ctx.message.delete()
     global msg_id
+    if len(letter) > 1:
+        await ctx.send("Guess only one letter at time.")
+        return
     r = hangman.play(letter)
     guessed_letters = ""
     printword = ""
@@ -213,14 +216,6 @@ async def guess(ctx: Context, letter: str) -> None:
         printword += hangman.word_letters[i] + " "
     for i in range(len(hangman.guesses)):
         guessed_letters += hangman.guesses[i] + " "
-    if len(letter) > 1:
-        pass
-        await msg_id.edit(content=("**hangman**\n"
-                                   + "Player: " + str(hangman.player) + "\n"
-                                   + "Guesses: " + guessed_letters + "\n"
-                                   + "Lives: " + str(hangman.lives) + "\n"
-                                   + "Word: " + printword + "\n"
-                                   + "Guess only one letter at time!"))
     if "- " not in hangman.word_letters:
         await msg_id.edit(content=("**hangman**\n"
                                    + "Player: " + str(hangman.player) + "\n"
