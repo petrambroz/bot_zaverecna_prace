@@ -63,7 +63,9 @@ class MentionsNotifier:
 
     def unsubscribe(self, user_id: int) -> None:
         if user_id in self.emails:
-            del self.emails[user_id]
+            with open("emails.json", "w") as file:
+                del self.emails[user_id]
+                json.dump(self.emails, file)
 
     def notify_about_mention(self, user_id: List, msg_content: str,
                              msg_url: str) -> None:
