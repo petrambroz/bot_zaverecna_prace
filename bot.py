@@ -179,7 +179,6 @@ async def on_message(message: Message) -> None:
     if users != []:
         for i in range(len(users)):
             mentions.append(users[i].id)
-    print(mentions_notifier.emails)
     for user in mentions:
         if str(mentions[i]) in mentions_notifier.emails:
             mentions_notifier.notify_about_mention(mentions[i],
