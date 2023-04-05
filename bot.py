@@ -216,10 +216,10 @@ async def play_hangman(ctx: Context) -> None:
         printword += hangman.word_letters[i] + " "
     global msg_id
     msg_id = await ctx.send("**hangman**\n"
-                            + "Player: " + str(hangman.player) + "\n"
-                            + "Guesses: " + "\n"
-                            + "Lives: " + str(hangman.lives) + "\n"
-                            + "Word: " + printword)
+                            + "Hráč: " + str(hangman.player) + "\n"
+                            + "Hádaná písmena: " + "\n"
+                            + "Životy: " + str(hangman.lives) + "\n"
+                            + "Slovo: " + printword)
 
 
 @bot.command(name="guess")
@@ -227,7 +227,7 @@ async def guess(ctx: Context, letter: str) -> None:
     await ctx.message.delete()
     global msg_id
     if len(letter) != 1 or not letter.isalpha():
-        await ctx.send("Guess only one letter at time.")
+        await ctx.send("Hádejte pouze 1 písmeno.")
         return
     return_code = hangman.play(letter)
     guessed_letters = ""
@@ -238,41 +238,46 @@ async def guess(ctx: Context, letter: str) -> None:
         guessed_letters += hangman.guesses[i] + " "
     if "- " not in hangman.word_letters:
         await msg_id.edit(content=("**hangman**\n"
-                                   + "Player: " + str(hangman.player) + "\n"
-                                   + "Guesses: " + guessed_letters + "\n"
-                                   + "Lives: " + str(hangman.lives) + "\n"
-                                   + "Word: " + printword + "\n"
-                                   + "You won!"))
+                                   + "Hráč: " + str(hangman.player) + "\n"
+                                   + "Hádaná písmena: "
+                                   + guessed_letters + "\n"
+                                   + "Životy: " + str(hangman.lives) + "\n"
+                                   + "Slovo: " + printword + "\n"
+                                   + "Vyhráli jste!"))
         msg_id = None
         return
     if return_code == 1:
         await msg_id.edit(content=("**hangman**\n"
-                                   + "Player: " + str(hangman.player) + "\n"
-                                   + "Guesses: " + guessed_letters + "\n"
-                                   + "Lives: " + str(hangman.lives) + "\n"
-                                   + "Word: " + printword + "\n"
-                                   + "Correct guess."))
+                                   + "Hráč: " + str(hangman.player) + "\n"
+                                   + "Hádaná písmena: "
+                                   + guessed_letters + "\n"
+                                   + "Životy: " + str(hangman.lives) + "\n"
+                                   + "Slovo: " + printword + "\n"
+                                   + "Správný tip."))
     elif return_code == 0:
         await msg_id.edit(content=("**hangman**\n"
-                                   + "Player: " + str(hangman.player) + "\n"
-                                   + "Guesses: " + guessed_letters + "\n"
-                                   + "Lives: " + str(hangman.lives) + "\n"
-                                   + "Word: " + printword + "\n"
-                                   + "Wrong guess."))
+                                   + "Hráč: " + str(hangman.player) + "\n"
+                                   + "Hádaná písmena: "
+                                   + guessed_letters + "\n"
+                                   + "Životy: " + str(hangman.lives) + "\n"
+                                   + "Slovo: " + printword + "\n"
+                                   + "Špatný tip."))
     if return_code == 2:
         await msg_id.edit(content=("**hangman**\n"
-                                   + "Player: " + str(hangman.player) + "\n"
-                                   + "Guesses: " + guessed_letters + "\n"
-                                   + "Lives: " + str(hangman.lives) + "\n"
-                                   + "Word: " + printword + "\n"
-                                   + "You already guessed that."))
+                                   + "Hráč: " + str(hangman.player) + "\n"
+                                   + "Hádaná písmena: "
+                                   + guessed_letters + "\n"
+                                   + "Životy: " + str(hangman.lives) + "\n"
+                                   + "Slovo: " + printword + "\n"
+                                   + "Písmeno již bylo hádáno."))
     if hangman.lives == 0:
         await msg_id.edit(content=("**hangman**\n"
-                                   + "Player: " + str(hangman.player) + "\n"
-                                   + "Guesses: " + guessed_letters + "\n"
-                                   + "Lives: " + str(hangman.lives) + "\n"
-                                   + "Word: " + printword + "\n"
-                                   + "You lost. The word was: "
+                                   + "Hráč: " + str(hangman.player) + "\n"
+                                   + "Hádaná písmena: "
+                                   + guessed_letters + "\n"
+                                   + "Životy: " + str(hangman.lives) + "\n"
+                                   + "Slovo: " + printword + "\n"
+                                   + "Prohráváte. Slovo bylo: "
                                    + hangman.word))
         msg_id = None
 
