@@ -102,20 +102,20 @@ class Hangman:
 
     def play(self, letter) -> int:
         if letter in self.guesses:
-            return 2
+            return 2  # pripad, kdy je jiz pismeno hadano
         self.guesses.append(letter)
-        if letter in self.word:
+        if letter in self.word:  # kontrola zda je pismeno ve slove
             k = self.word.count(letter)
-            if k > 1:
+            if k > 1:  # pokud je pismeno ve slove vickrat
                 indices = [i.start() for i in re.finditer(letter, self.word)]
                 for i in range(k):
                     self.word_letters[indices[i]] = letter
                 return 1
-            if k == 1:
+            if k == 1:  # pokud je pismeno ve slove jednou
                 self.word_letters[self.word.find(letter)] = letter
                 return 1
-        else:
-            self.lives -= 1
+        else:  # pismeno ve slove neni
+            self.lives -= 1  # odebrani zivota
             return 0
 
 
@@ -213,7 +213,7 @@ async def guess(ctx: Context, letter: str) -> None:
     if len(letter) != 1 or not letter.isalpha():
         await ctx.send("Guess only one letter at time.")
         return
-    r = hangman.play(letter)
+    return_code = hangman.play(letter)
     guessed_letters = ""
     printword = ""
     for i in range(len(hangman.word)):
@@ -229,21 +229,21 @@ async def guess(ctx: Context, letter: str) -> None:
                                    + "You won!"))
         msg_id = None
         return
-    if r == 1:
+    if return_code == 1:
         await msg_id.edit(content=("**hangman**\n"
                                    + "Player: " + str(hangman.player) + "\n"
                                    + "Guesses: " + guessed_letters + "\n"
                                    + "Lives: " + str(hangman.lives) + "\n"
                                    + "Word: " + printword + "\n"
                                    + "Correct guess."))
-    elif r == 0:
+    elif return_code == 0:
         await msg_id.edit(content=("**hangman**\n"
                                    + "Player: " + str(hangman.player) + "\n"
                                    + "Guesses: " + guessed_letters + "\n"
                                    + "Lives: " + str(hangman.lives) + "\n"
                                    + "Word: " + printword + "\n"
                                    + "Wrong guess."))
-    if r == 2:
+    if return_code == 2:
         await msg_id.edit(content=("**hangman**\n"
                                    + "Player: " + str(hangman.player) + "\n"
                                    + "Guesses: " + guessed_letters + "\n"

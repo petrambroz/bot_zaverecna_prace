@@ -20,6 +20,7 @@ bot = commands.Bot(
     command_prefix="!", case_insensitive=True, intents=intents
 )
 
+
 class MemeGenerator:
     def list_memes(self) -> str:
         response = requests.get(url=f"{IMGFLIP_API_URL}/get_memes")
