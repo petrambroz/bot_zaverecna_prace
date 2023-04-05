@@ -18,6 +18,25 @@ bot = commands.Bot(
     command_prefix="!", case_insensitive=True, intents=intents)
 
 
+class SeznamPrikazu:
+    def __init__(self) -> None:
+        pass
+
+    def create_message(self):
+        message = (
+            "```\n"
+            "Příkazy:\n"
+            "!list_memes\n"
+            '!make_meme <id> "<text 1>" "<text 2>"\n'
+            "!subscribe <email>\n"
+            "!unsubscribe\n"
+            "!play_hangman\n"
+            "!guess <písmeno>\n"
+            "```"
+        )
+        return message
+
+
 class MemeGenerator:
     def __init__(self) -> None:
         pass
@@ -84,15 +103,15 @@ class MentionsNotifier:
 
 class Hangman:
     def start_game(self, player) -> None:
-        with open("words.txt", "r") as file:
+        with open("words.txt", "r") as file:  # nacteni slov ze souboru
             all_words = file.readlines()
-        self.word_1 = random.choice(all_words)
+        self.word_unformatted = random.choice(all_words)  # vyber slova
         # odebrani \n pokud ho slovo obsahuje
-        if "\n" in self.word_1:
-            self.word = self.word_1[:-1]
+        if "\n" in self.word_unformatted:
+            self.word = self.word_unformatted[:-1]
         else:
-            self.word = self.word_1
-        print(self.word)
+            self.word = self.word_unformatted
+        print(self.word)  # vypsani slova do konzole pro kontrolu
         self.player = player
         self.lives = 7
         self.guesses = []
@@ -126,19 +145,17 @@ async def on_ready() -> None:
 
 
 # --- seznam prikazu ---
+seznam_prikazu = SeznamPrikazu
+
+
 @bot.command(name="seznam_prikazu")
 async def prikazy(ctx: Context) -> None:
-    message = (
-        "**Příkazy **\n"
-        "!list_memes\n"
-        '!make_meme <id> "<text 1>" "<text 2>"\n'
-        "!subscribe <email>\n"
-        "!unsubscribe\n"
-        "!play_hangman\n"
-        "!guess <písmeno>\n"
-    )
-    await ctx.send(message)
+    await ctx.send(seznam_prikazu.create_message(ctx))
 
+
+@bot.command(name="prikazy")
+async def prikazy(ctx: Context) -> None:
+    await ctx.send(seznam_prikazu.create_message(ctx))
 
 # --- tvorba memu ---
 meme_generator = MemeGenerator()
@@ -194,14 +211,13 @@ hangman = Hangman()
 @bot.command(name="play_hangman")
 async def play_hangman(ctx: Context) -> None:
     hangman.start_game(ctx.author.name)
-    guess = ""
     printword = ""
     for i in range(len(hangman.word)):
         printword += hangman.word_letters[i] + " "
     global msg_id
     msg_id = await ctx.send("**hangman**\n"
                             + "Player: " + str(hangman.player) + "\n"
-                            + "Guesses: " + guess + "\n"
+                            + "Guesses: " + "\n"
                             + "Lives: " + str(hangman.lives) + "\n"
                             + "Word: " + printword)
 
