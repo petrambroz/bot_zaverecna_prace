@@ -50,11 +50,11 @@ class MemeGenerator:
         for i in range(25):
             meme_id.append(memes["data"]["memes"][i]["id"])
             meme_name.append(memes["data"]["memes"][i]["name"])
-        return_message = "```"
+        message = "```"
         for i in range(25):
-            return_message += "\n" + meme_id[i] + str(" ") + meme_name[i]
-        return_message += "```"
-        return return_message
+            message += "\n" + meme_id[i] + str(" ") + meme_name[i]
+        message += "```"
+        return message
 
     def make_meme(
         self, template_id: int, top_text: str, bottom_text: str
