@@ -193,11 +193,11 @@ async def on_message(message: Message) -> None:
     users = message.mentions
     mentions = []
     if users != []:
-        for i in range(len(users)):
-            mentions.append(users[i].id)
+        for index, user in enumerate(users):
+            mentions.append(users[index].id)
     for user in mentions:
-        if str(mentions[i]) in mentions_notifier.emails:
-            mentions_notifier.notify_about_mention(mentions[i],
+        if str(user) in mentions_notifier.emails:
+            mentions_notifier.notify_about_mention(user,
                                                    message.jump_url)
     await bot.process_commands(message)
 
@@ -230,8 +230,8 @@ async def guess(ctx: Context, letter: str) -> None:
     return_code = hangman.play(letter)
     guessed_letters = ""
     displayed_word = ""
-    for count, value in enumerate(hangman.word):
-        displayed_word += hangman.word_letters[count] + " "
+    for index, value in enumerate(hangman.word):
+        displayed_word += hangman.word_letters[index] + " "
     for guess in hangman.guesses:
         guessed_letters += guess + " "
     if "- " not in hangman.word_letters:
