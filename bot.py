@@ -1,14 +1,15 @@
+from typing import List
 from os import getenv
+import json
+import random
+import re
 import requests
 from discord import Intents, Message
 from discord.ext import commands
 from discord.ext.commands import Context
 from dotenv import load_dotenv
 from notifiers import get_notifier
-import json
-import re
-import random
-from typing import List
+
 load_dotenv()
 TOKEN = getenv("DISCORD_TOKEN")
 
@@ -42,9 +43,8 @@ class MemeGenerator:
         pass
 
     def list_memes(self) -> str:
-        response = requests.get("https://api.imgflip.com/get_memes")
+        response = requests.get("https://api.imgflip.com/get_memes", timeout=10)
         memes = response.json()
-        memes_striped = memes["data"]["memes"]
         meme_id = []
         meme_name = []
         for i in range(25):
@@ -59,7 +59,7 @@ class MemeGenerator:
     def make_meme(
         self, template_id: int, top_text: str, bottom_text: str
     ) -> str:
-        response = requests.post("https://api.imgflip.com/caption_image",
+        response = requests.post("https://api.imgflip.com/caption_image", timeout=10,
                                  data={"template_id": template_id,
                                        "username": getenv("MEME_USERNAME"),
                                        "password": getenv("MEME_PASSWORD"),
@@ -71,22 +71,21 @@ class MemeGenerator:
 
 class MentionsNotifier:
     def __init__(self) -> None:
-        with open("emails.json", "r") as file:
+        with open("emails.json", "r", encoding="utf8") as file:
             self.emails = json.load(file)
 
     def subscribe(self, user_id: int, email: str) -> None:
-        with open("emails.json", "w") as file:
+        with open("emails.json", "w", encoding="utf8") as file:
             self.emails[str(user_id)] = email
             json.dump(self.emails, file)
 
     def unsubscribe(self, user_id: int) -> None:
         if user_id in self.emails:
-            with open("emails.json", "w") as file:
+            with open("emails.json", "w", encoding="utf8") as file:
                 del self.emails[user_id]
                 json.dump(self.emails, file)
 
-    def notify_about_mention(self, user_id: List, msg_content: str,
-                             msg_url: str) -> None:
+    def notify_about_mention(self, user_id: List, msg_url: str) -> None:
         user_email = self.emails[str(user_id)]
         email = get_notifier("email")
         settings = {'host': 'ksi2022smtp.iamroot.eu',
@@ -98,12 +97,12 @@ class MentionsNotifier:
                     'from': getenv("MAIL_USERNAME"),
                     'subject': "Discord mention notification",
                     'message': "Someone mentioned you in channel " + msg_url}
-        res = email.notify(**settings)
+        email.notify(**settings)
 
 
 class Hangman:
     def start_game(self, player) -> None:
-        with open("words.txt", "r") as file:  # nacteni slov ze souboru
+        with open("words.txt", "r", encoding="utf8") as file:  # nacteni slov ze souboru
             all_words = file.readlines()
         self.word_unformatted = random.choice(all_words)  # vyber slova
         # odebrani \n pokud ho slovo obsahuje
@@ -141,7 +140,7 @@ class Hangman:
 # --- oznameni o pripojeni ---
 @bot.event
 async def on_ready() -> None:
-    print(f"Bot se připojil.")
+    print("Bot se připojil.")
 
 
 # --- seznam prikazu ---
@@ -149,12 +148,12 @@ seznam_prikazu = SeznamPrikazu
 
 
 @bot.command(name="seznam_prikazu")
-async def prikazy(ctx: Context) -> None:
+async def prikazy1(ctx: Context) -> None:
     await ctx.send(seznam_prikazu.create_message(ctx))
 
 
 @bot.command(name="prikazy")
-async def prikazy(ctx: Context) -> None:
+async def prikazy2(ctx: Context) -> None:
     await ctx.send(seznam_prikazu.create_message(ctx))
 
 # --- tvorba memu ---
@@ -199,7 +198,6 @@ async def on_message(message: Message) -> None:
     for user in mentions:
         if str(mentions[i]) in mentions_notifier.emails:
             mentions_notifier.notify_about_mention(mentions[i],
-                                                   message.content,
                                                    message.jump_url)
     await bot.process_commands(message)
 
@@ -214,8 +212,8 @@ async def play_hangman(ctx: Context) -> None:
     displayed_word = ""
     for i in range(len(hangman.word)):
         displayed_word += hangman.word_letters[i] + " "
-    global msg_id
-    msg_id = await ctx.send("**hangman**\n"
+    global MSG_ID
+    MSG_ID = await ctx.send("**hangman**\n"
                             + "Hráč: " + str(hangman.player) + "\n"
                             + "Hádaná písmena: " + "\n"
                             + "Životy: " + str(hangman.lives) + "\n"
@@ -225,7 +223,7 @@ async def play_hangman(ctx: Context) -> None:
 @bot.command(name="guess")
 async def guess(ctx: Context, letter: str) -> None:
     await ctx.message.delete()
-    global msg_id
+    global MSG_ID
     if len(letter) != 1 or not letter.isalpha():
         await ctx.send("Hádejte pouze 1 písmeno.")
         return
@@ -237,17 +235,17 @@ async def guess(ctx: Context, letter: str) -> None:
     for i in range(len(hangman.guesses)):
         guessed_letters += hangman.guesses[i] + " "
     if "- " not in hangman.word_letters:
-        await msg_id.edit(content=("**hangman**\n"
+        await MSG_ID.edit(content=("**hangman**\n"
                                    + "Hráč: " + str(hangman.player) + "\n"
                                    + "Hádaná písmena: "
                                    + guessed_letters + "\n"
                                    + "Životy: " + str(hangman.lives) + "\n"
                                    + "Slovo: " + displayed_word + "\n"
                                    + "Vyhráli jste!"))
-        msg_id = None
+        MSG_ID = None
         return
     if return_code == 1:
-        await msg_id.edit(content=("**hangman**\n"
+        await MSG_ID.edit(content=("**hangman**\n"
                                    + "Hráč: " + str(hangman.player) + "\n"
                                    + "Hádaná písmena: "
                                    + guessed_letters + "\n"
@@ -255,7 +253,7 @@ async def guess(ctx: Context, letter: str) -> None:
                                    + "Slovo: " + displayed_word + "\n"
                                    + "Správný tip."))
     elif return_code == 0:
-        await msg_id.edit(content=("**hangman**\n"
+        await MSG_ID.edit(content=("**hangman**\n"
                                    + "Hráč: " + str(hangman.player) + "\n"
                                    + "Hádaná písmena: "
                                    + guessed_letters + "\n"
@@ -263,7 +261,7 @@ async def guess(ctx: Context, letter: str) -> None:
                                    + "Slovo: " + displayed_word + "\n"
                                    + "Špatný tip."))
     if return_code == 2:
-        await msg_id.edit(content=("**hangman**\n"
+        await MSG_ID.edit(content=("**hangman**\n"
                                    + "Hráč: " + str(hangman.player) + "\n"
                                    + "Hádaná písmena: "
                                    + guessed_letters + "\n"
@@ -271,7 +269,7 @@ async def guess(ctx: Context, letter: str) -> None:
                                    + "Slovo: " + displayed_word + "\n"
                                    + "Písmeno již bylo hádáno."))
     if hangman.lives == 0:
-        await msg_id.edit(content=("**hangman**\n"
+        await MSG_ID.edit(content=("**hangman**\n"
                                    + "Hráč: " + str(hangman.player) + "\n"
                                    + "Hádaná písmena: "
                                    + guessed_letters + "\n"
@@ -279,6 +277,6 @@ async def guess(ctx: Context, letter: str) -> None:
                                    + "Slovo: " + displayed_word + "\n"
                                    + "Prohráváte. Slovo bylo: "
                                    + hangman.word))
-        msg_id = None
+        MSG_ID = None
 
 bot.run(TOKEN)
