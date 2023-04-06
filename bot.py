@@ -230,10 +230,10 @@ async def guess(ctx: Context, letter: str) -> None:
     return_code = hangman.play(letter)
     guessed_letters = ""
     displayed_word = ""
-    for i in range(len(hangman.word)):
-        displayed_word += hangman.word_letters[i] + " "
-    for i in range(len(hangman.guesses)):
-        guessed_letters += hangman.guesses[i] + " "
+    for count, value in enumerate(hangman.word):
+        displayed_word += hangman.word_letters[count] + " "
+    for guess in hangman.guesses:
+        guessed_letters += guess + " "
     if "- " not in hangman.word_letters:
         await MSG_ID.edit(content=("**hangman**\n"
                                    + "Hráč: " + str(hangman.player) + "\n"
