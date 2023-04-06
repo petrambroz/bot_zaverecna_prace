@@ -211,15 +211,15 @@ hangman = Hangman()
 @bot.command(name="play_hangman")
 async def play_hangman(ctx: Context) -> None:
     hangman.start_game(ctx.author.name)
-    printword = ""
+    displayed_word = ""
     for i in range(len(hangman.word)):
-        printword += hangman.word_letters[i] + " "
+        displayed_word += hangman.word_letters[i] + " "
     global msg_id
     msg_id = await ctx.send("**hangman**\n"
                             + "Hráč: " + str(hangman.player) + "\n"
                             + "Hádaná písmena: " + "\n"
                             + "Životy: " + str(hangman.lives) + "\n"
-                            + "Slovo: " + printword)
+                            + "Slovo: " + displayed_word)
 
 
 @bot.command(name="guess")
@@ -231,9 +231,9 @@ async def guess(ctx: Context, letter: str) -> None:
         return
     return_code = hangman.play(letter)
     guessed_letters = ""
-    printword = ""
+    displayed_word = ""
     for i in range(len(hangman.word)):
-        printword += hangman.word_letters[i] + " "
+        displayed_word += hangman.word_letters[i] + " "
     for i in range(len(hangman.guesses)):
         guessed_letters += hangman.guesses[i] + " "
     if "- " not in hangman.word_letters:
@@ -242,7 +242,7 @@ async def guess(ctx: Context, letter: str) -> None:
                                    + "Hádaná písmena: "
                                    + guessed_letters + "\n"
                                    + "Životy: " + str(hangman.lives) + "\n"
-                                   + "Slovo: " + printword + "\n"
+                                   + "Slovo: " + displayed_word + "\n"
                                    + "Vyhráli jste!"))
         msg_id = None
         return
@@ -252,7 +252,7 @@ async def guess(ctx: Context, letter: str) -> None:
                                    + "Hádaná písmena: "
                                    + guessed_letters + "\n"
                                    + "Životy: " + str(hangman.lives) + "\n"
-                                   + "Slovo: " + printword + "\n"
+                                   + "Slovo: " + displayed_word + "\n"
                                    + "Správný tip."))
     elif return_code == 0:
         await msg_id.edit(content=("**hangman**\n"
@@ -260,7 +260,7 @@ async def guess(ctx: Context, letter: str) -> None:
                                    + "Hádaná písmena: "
                                    + guessed_letters + "\n"
                                    + "Životy: " + str(hangman.lives) + "\n"
-                                   + "Slovo: " + printword + "\n"
+                                   + "Slovo: " + displayed_word + "\n"
                                    + "Špatný tip."))
     if return_code == 2:
         await msg_id.edit(content=("**hangman**\n"
@@ -268,7 +268,7 @@ async def guess(ctx: Context, letter: str) -> None:
                                    + "Hádaná písmena: "
                                    + guessed_letters + "\n"
                                    + "Životy: " + str(hangman.lives) + "\n"
-                                   + "Slovo: " + printword + "\n"
+                                   + "Slovo: " + displayed_word + "\n"
                                    + "Písmeno již bylo hádáno."))
     if hangman.lives == 0:
         await msg_id.edit(content=("**hangman**\n"
@@ -276,7 +276,7 @@ async def guess(ctx: Context, letter: str) -> None:
                                    + "Hádaná písmena: "
                                    + guessed_letters + "\n"
                                    + "Životy: " + str(hangman.lives) + "\n"
-                                   + "Slovo: " + printword + "\n"
+                                   + "Slovo: " + displayed_word + "\n"
                                    + "Prohráváte. Slovo bylo: "
                                    + hangman.word))
         msg_id = None
