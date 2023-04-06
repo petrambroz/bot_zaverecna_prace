@@ -43,23 +43,25 @@ class MemeGenerator:
         pass
 
     def list_memes(self) -> str:
-        response = requests.get("https://api.imgflip.com/get_memes", timeout=10)
+        response = requests.get("https://api.imgflip.com/get_memes",
+                                timeout=10)
         memes = response.json()
         meme_id = []
         meme_name = []
         for i in range(25):
             meme_id.append(memes["data"]["memes"][i]["id"])
             meme_name.append(memes["data"]["memes"][i]["name"])
-        return_message = "```"
+        message = "```"
         for i in range(25):
-            return_message += "\n" + meme_id[i] + str(" ") + meme_name[i]
-        return_message += "```"
-        return return_message
+            message += "\n" + meme_id[i] + str(" ") + meme_name[i]
+        message += "```"
+        return message
 
     def make_meme(
         self, template_id: int, top_text: str, bottom_text: str
     ) -> str:
-        response = requests.post("https://api.imgflip.com/caption_image", timeout=10,
+        response = requests.post("https://api.imgflip.com/caption_image",
+                                 timeout=10,
                                  data={"template_id": template_id,
                                        "username": getenv("MEME_USERNAME"),
                                        "password": getenv("MEME_PASSWORD"),
@@ -102,7 +104,8 @@ class MentionsNotifier:
 
 class Hangman:
     def start_game(self, player) -> None:
-        with open("words.txt", "r", encoding="utf8") as file:  # nacteni slov ze souboru
+        with open("words.txt", "r", encoding="utf8") as file:
+            # nacteni slov ze souboru
             all_words = file.readlines()
         self.word_unformatted = random.choice(all_words)  # vyber slova
         # odebrani \n pokud ho slovo obsahuje
