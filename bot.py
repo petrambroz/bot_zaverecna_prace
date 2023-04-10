@@ -90,7 +90,7 @@ class MentionsNotifier:
     def notify_about_mention(self, user_id: List, msg_url: str) -> None:
         user_email = self.emails[str(user_id)]
         email = get_notifier("email")
-        settings = {'host': 'ksi2022smtp.iamroot.eu',
+        settings = {'host': getenv("SMTP_HOST"),
                     'port': 465,
                     'ssl': True,
                     'username': getenv("MAIL_USERNAME"),
