@@ -213,8 +213,8 @@ hangman = Hangman()
 async def play_hangman(ctx: Context) -> None:
     hangman.start_game(ctx.author.name)
     displayed_word = ""
-    for i in range(len(hangman.word)):
-        displayed_word += hangman.word_letters[i] + " "
+    for key, value in enumerate(hangman.word):
+        displayed_word += hangman.word_letters[key] + " "
     global MSG_ID
     MSG_ID = await ctx.send("**hangman**\n"
                             + "Hráč: " + str(hangman.player) + "\n"
